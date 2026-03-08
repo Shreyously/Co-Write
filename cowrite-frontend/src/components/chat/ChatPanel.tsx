@@ -4,7 +4,7 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Badge } from '../ui/badge';
-import { Send, MessageCircle, X, Minimize2, Maximize2, Smile } from 'lucide-react';
+import { Send, MessageCircle, X, Minimize2, Maximize2, Smile, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface ChatMessage {
@@ -47,32 +47,21 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const processedMessageIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!socket) return;
 
     // Listen for incoming chat messages
     socket.on('receive-chat-message', (message: ChatMessage) => {
-      setMessages(prev => {
-        // Check for duplicate messages by ID and timestamp
-        const isDuplicate = prev.some(existingMessage => 
-          existingMessage.id === message.id || 
-          (existingMessage.userId === message.userId && 
-           existingMessage.text === message.text && 
-           Math.abs(new Date(existingMessage.timestamp).getTime() - new Date(message.timestamp).getTime()) < 1000)
-        );
-        
-        if (isDuplicate) {
-          return prev;
-        }
-        
-        // Increment unread count if chat is minimized or closed and message is from another user
-        if ((isMinimized || !isOpen) && message.userId !== currentUser?.id) {
-          setUnreadCount(count => count + 1);
-        }
-        
-        return [...prev, message];
-      });
+      if (processedMessageIds.current.has(message.id)) return;
+      processedMessageIds.current.add(message.id);
+
+      setMessages(prev => [...prev, message]);
+
+      if ((isMinimized || !isOpen) && message.userId !== currentUser?.id) {
+        setUnreadCount(count => count + 1);
+      }
     });
 
     // Listen for typing status updates
@@ -94,11 +83,17 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-    // Clear unread count when chat is open and not minimized
     if (isOpen && !isMinimized) {
       setUnreadCount(0);
     }
-  }, [messages, typingUsers, isOpen, isMinimized]); // Also scroll when typing users change
+  }, [messages, typingUsers, isOpen, isMinimized]);
+
+  // Clear unread count immediately when chat is opened or un-minimized
+  useEffect(() => {
+    if (isOpen && !isMinimized) {
+      setUnreadCount(0);
+    }
+  }, [isOpen, isMinimized]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -191,12 +186,12 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           <div className='flex items-center justify-center h-full w-full text-white text-sm font-semibold p-1 gap-1'>
             <MessageCircle className="h-6 w-6 text-white" /> Chat
           </div>
-          {(messages.length > 0 || unreadCount > 0) && (
-            <Badge 
-              variant="destructive" 
+          {unreadCount > 0 && (
+            <Badge
+              variant="destructive"
               className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs font-bold animate-pulse"
             >
-              {unreadCount > 0 ? unreadCount : messages.length > 99 ? '99+' : messages.length}
+              {unreadCount > 99 ? '99+' : unreadCount}
             </Badge>
           )}
         </div>
@@ -206,12 +201,12 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   return (
     <Card className={cn(
-      "fixed right-6 z-50 shadow-2xl border-0 overflow-hidden chat-panel-enter",
+      "fixed right-6 z-50 shadow-2xl border-0 overflow-hidden chat-panel-enter flex flex-col",
       "bg-gradient-to-b from-white/95 to-white/90 backdrop-blur-xl",
       "dark:from-gray-900/95 dark:to-gray-800/90",
       "transition-all duration-300 ease-in-out transform py-1",
-      isMinimized 
-        ? "bottom-6 w-96 h-[50vh]" 
+      isMinimized
+        ? "bottom-6 w-96 h-[50vh]"
         : "top-6 bottom-6 w-96 h-[calc(100vh-3rem)]",
       className
     )}>
@@ -264,8 +259,12 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         </div>
       </CardHeader>
 
-      {!isMinimized && (
-        <CardContent className="flex-1 p-4 pt-0 flex flex-col min-h-0">
+      <div className="flex items-center gap-1.5 px-4 py-1.5 bg-amber-50/80 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-800/30">
+        <Info className="h-3 w-3 text-amber-500 flex-shrink-0" />
+        <span className="text-xs text-amber-600 dark:text-amber-400">Chats are not saved after you leave</span>
+      </div>
+
+      <CardContent className="flex-1 p-4 pt-0 flex flex-col min-h-0 overflow-hidden">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto scrollbar-modal space-y-4 mb-4 pr-2">
             {messages.length === 0 ? (
@@ -427,7 +426,6 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             </Button>
           </div>
         </CardContent>
-      )}
     </Card>
   );
 };
