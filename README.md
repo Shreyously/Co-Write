@@ -345,11 +345,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-<div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/bPavan16">Pavan</a> © 2025</p>
-  <p>
-    <a href="https://github.com/bPavan16/cowrite/issues">Report Bug</a> •
-    <a href="https://github.com/bPavan16/cowrite/issues">Request Feature</a>
-  </p>
-</div>
 
