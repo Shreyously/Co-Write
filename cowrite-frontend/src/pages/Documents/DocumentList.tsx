@@ -68,7 +68,7 @@ const DocumentList = () => {
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3001/api/documents");
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents`);
       setDocuments(response.data);
       setError(null);
     } catch (err) {
@@ -88,7 +88,7 @@ const DocumentList = () => {
 
     const loadingToast = toast.loading("Creating new document...");
     try {
-      const response = await axios.post("http://localhost:3001/api/documents", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/documents`, {
         title: `Untitled Document - ${Math.floor(Math.random() * 900 + 100)}`,
       });
       toast.dismiss(loadingToast);
@@ -124,7 +124,7 @@ const DocumentList = () => {
 
     const loadingToast = toast.loading("Deleting document...");
     try {
-      await axios.delete(`http://localhost:3001/api/documents/${documentToDelete._id}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/documents/${documentToDelete._id}`);
       setDocuments(documents.filter((doc) => doc._id !== documentToDelete._id));
       toast.dismiss(loadingToast);
       toast.success("Document deleted successfully");
@@ -170,7 +170,7 @@ const DocumentList = () => {
 
     const loadingToast = toast.loading("Updating document title...");
     try {
-      await axios.patch(`http://localhost:3001/api/documents/${id}/title`, {
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/documents/${id}/title`, {
         title: editTitle.trim() || "Untitled Document",
       });
 

@@ -84,7 +84,7 @@ const TextEditor = () => {
       socketOptions.auth.token = token;
     }
 
-    const socket = io("http://localhost:3001", socketOptions);
+    const socket = io(import.meta.env.VITE_API_URL, socketOptions);
     setSocket(socket);
 
     return () => {

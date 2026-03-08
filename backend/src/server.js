@@ -31,7 +31,7 @@ connectToDb();
 
 const ioServer = new Server(server, {
     cors: {
-        origin: ['http://localhost:5173', 'http://localhost:5175'],
+        origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : ['http://localhost:5173'],
         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     }
 });

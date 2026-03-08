@@ -52,7 +52,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   const fetchCollaborators = useCallback(async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/documents/${documentId}/collaborators`,
+        `${import.meta.env.VITE_API_URL}/api/documents/${documentId}/collaborators`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -70,7 +70,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
     try {
       setSearchLoading(true);
       const response = await axios.get(
-        `http://localhost:3001/api/auth/users/search?query=${encodeURIComponent(searchQuery)}`,
+        `${import.meta.env.VITE_API_URL}/api/auth/users/search?query=${encodeURIComponent(searchQuery)}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -101,7 +101,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
     try {
       setLoading(true);
       await axios.post(
-        `http://localhost:3001/api/documents/${documentId}/share`,
+        `${import.meta.env.VITE_API_URL}/api/documents/${documentId}/share`,
         {
           email: user.email,
           permission
@@ -128,7 +128,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   const updatePermission = async (userId: string, permission: 'read' | 'write' | 'admin') => {
     try {
       await axios.put(
-        `http://localhost:3001/api/documents/${documentId}/collaborators/${userId}`,
+        `${import.meta.env.VITE_API_URL}/api/documents/${documentId}/collaborators/${userId}`,
         { permission },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -148,7 +148,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   const removeCollaborator = async (userId: string) => {
     try {
       await axios.delete(
-        `http://localhost:3001/api/documents/${documentId}/collaborators/${userId}`,
+        `${import.meta.env.VITE_API_URL}/api/documents/${documentId}/collaborators/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -167,7 +167,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   const toggleVisibility = async () => {
     try {
       await axios.put(
-        `http://localhost:3001/api/documents/${documentId}/visibility`,
+        `${import.meta.env.VITE_API_URL}/api/documents/${documentId}/visibility`,
         { isPublic: !isPublic },
         {
           headers: { Authorization: `Bearer ${token}` }
