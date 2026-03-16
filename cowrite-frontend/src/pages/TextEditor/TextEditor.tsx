@@ -33,6 +33,11 @@ type QuillWithCursorRegistry = typeof Quill & {
   __cursorsRegistered?: boolean;
 };
 
+type QuillCursorModule = {
+  createCursor: (id: string, name: string, color: string) => void;
+  moveCursor: (id: string, range: CursorRange) => void;
+};
+
 const TextEditor = () => {
   // All the State variables and functions are defined here
 
@@ -115,7 +120,7 @@ const TextEditor = () => {
     socket.on("receive-changes", handler);
 
     // Handle remote cursor updates
-    const cursorsModule = quill.getModule("cursors");
+    const cursorsModule = quill.getModule("cursors") as QuillCursorModule | null;
 
     type RemoteCursorPayload = {
       userId: string;
