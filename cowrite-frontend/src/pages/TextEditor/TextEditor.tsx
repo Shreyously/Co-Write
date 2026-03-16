@@ -22,6 +22,17 @@ interface DocumentData {
   isPublic?: boolean;
 }
 
+const DEFAULT_DOCUMENT_TITLE = "Untitled Document";
+
+type CursorRange = {
+  index: number;
+  length: number;
+};
+
+type QuillWithCursorRegistry = typeof Quill & {
+  __cursorsRegistered?: boolean;
+};
+
 const TextEditor = () => {
   // All the State variables and functions are defined here
 
@@ -37,9 +48,10 @@ const TextEditor = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Register the cursors module once when this file is loaded
-  if ((Quill as any).register && !(Quill as any).__cursorsRegistered) {
-    (Quill as any).register("modules/cursors", QuillCursors);
-    (Quill as any).__cursorsRegistered = true;
+  const quillRegistry = Quill as QuillWithCursorRegistry;
+  if (quillRegistry.register && !quillRegistry.__cursorsRegistered) {
+    quillRegistry.register("modules/cursors", QuillCursors);
+    quillRegistry.__cursorsRegistered = true;
   }
 
   useEffect(() => {
@@ -62,14 +74,15 @@ const TextEditor = () => {
 
     socket.once("load-document", (document: DocumentData) => {
       if (document.data) {
+        // Quill document payloads don't have great TS support here.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        quill.setContents(document.data as any || "");
+        quill.setContents((document.data as any) || "");
       }
-      setDocumentTitle(document.title || "Untitled Document");
+      setDocumentTitle(document.title || DEFAULT_DOCUMENT_TITLE);
       quill.enable();
     });
 
-    socket.emit("get-document", documentId, documentTitle);
+    socket.emit("get-document", documentId, DEFAULT_DOCUMENT_TITLE);
 
     return () => {};
   }, [documentId, quill, socket]);
@@ -102,7 +115,7 @@ const TextEditor = () => {
     socket.on("receive-changes", handler);
 
     // Handle remote cursor updates
-    const cursorsModule: any = (quill as any).getModule("cursors");
+    const cursorsModule = quill.getModule("cursors");
 
     type RemoteCursorPayload = {
       userId: string;
@@ -163,8 +176,11 @@ const TextEditor = () => {
     };
 
     // Broadcast cursor / selection changes
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const selectionChangeHandler = (range: any, _oldRange: any, source: string) => {
+    const selectionChangeHandler = (
+      range: CursorRange | null,
+      _oldRange: CursorRange | null,
+      source: string
+    ) => {
       if (source !== "user") return;
       if (!range) return;
 
