@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const connectToDb = async () => {
-    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cowrite-db';
+    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cowrite';
 
     try {
         const conn = await mongoose.connect(uri);

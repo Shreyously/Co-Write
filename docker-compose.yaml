@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+
+  mongo:
+    image: mongo:7
+    container_name: cowrite-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: cowrite-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=local
+      - CLIENT_URL=http://localhost:5173
+      - JWT_SECRET=shreylocalsecret12
+      - MONGODB_URI=mongodb://mongo:27017/cowrite
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
