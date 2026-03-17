@@ -5,9 +5,9 @@
   ### A modern real-time collaborative document editor with live chat
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-  [![Node.js](https://img.shields.io/badge/Node.js-22.x-green.svg)](https://nodejs.org/)
-  [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green.svg)](https://www.mongodb.com/)
-  [![React](https://img.shields.io/badge/React-18.x-blue.svg)](https://reactjs.org/)
+  [![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-7.x-green.svg)](https://www.mongodb.com/)
+  [![React](https://img.shields.io/badge/React-19.x-blue.svg)](https://react.dev/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
   [![Socket.io](https://img.shields.io/badge/Socket.io-4.x-black.svg)](https://socket.io/)
   [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Latest-black.svg)](https://ui.shadcn.com/)
@@ -30,17 +30,23 @@
 ## 🖥️ Screenshots
 
 <div align="center">
-  <img src="images\image4.png" alt="Document List" width="80%"/>
-  <p><em>Home Page for Cowrite</em></p>
+  <img src="images/home_page.png" alt="Home Page" width="80%"/>
+  <p><em>Home page</em></p>
 
-  <img src="images\image1.png" alt="Document Editor" width="80%"/>
-  <p><em>Document management dashboard</em></p>
-  
-  <img src="images\image2.png" alt="Document List" width="80%"/>
-  <p><em>Document Editor with rich text formatting</em></p>
-  
-  <img src="images\image3.jpg" alt="Document List" width="80%"/>
-  <p><em>Document Editor with rich text formatting</em></p>
+  <img src="images/browse_docs.png" alt="Browse Documents" width="80%"/>
+  <p><em>Browse your documents</em></p>
+
+  <img src="images/editor.png" alt="Document Editor" width="80%"/>
+  <p><em>Rich text editor</em></p>
+
+  <img src="images/collaborative.png" alt="Collaborative Editing" width="80%"/>
+  <p><em>Real-time collaboration</em></p>
+
+  <img src="images/chats.png" alt="Live Chat" width="80%"/>
+  <p><em>Live chat while editing</em></p>
+
+  <img src="images/share_docs.png" alt="Share Document" width="80%"/>
+  <p><em>Share documents & manage access</em></p>
 
 </div>
 
@@ -48,7 +54,7 @@
 
 ### Frontend (cowrite-frontend)
 
-- **React 18** - Modern UI library with hooks
+- **React 19** - Modern UI library with hooks
 - **TypeScript** - Type-safe development
 - **Vite** - Fast build tool and dev server
 - **React Router** - Client-side routing
@@ -141,9 +147,10 @@ CoWrite follows a modern client-server architecture with real-time capabilities:
 
 ### Prerequisites
 
-- Node.js (v16+)
-- MongoDB (local or Atlas)
+- Node.js (v20+ recommended)
+- MongoDB (local/Atlas) **or** Docker (recommended for local MongoDB)
 - npm or yarn
+- (Optional) Docker Desktop (for Docker Compose workflow)
 
 ### Installation
 
@@ -177,6 +184,33 @@ CoWrite follows a modern client-server architecture with real-time capabilities:
    ```
 
 ### Running the Application
+
+#### Option A: Docker (MongoDB + Backend)
+
+From the repo root:
+
+```bash
+docker compose up --build
+```
+
+- MongoDB: `mongodb://localhost:27017`
+- Backend API: `http://localhost:3001`
+
+Then run the frontend locally:
+
+```bash
+cd cowrite-frontend
+npm install
+npm run dev
+```
+
+To stop:
+
+```bash
+docker compose down
+```
+
+#### Option B: Local (no Docker)
 
 1. Start MongoDB server (if using local MongoDB)
 
@@ -278,10 +312,13 @@ npm run dev          # Start with nodemon (development)
 ## 🎯 Project Structure
 
 ```
-cowrite/
+.
+├── .github/
+│   └── workflows/            # CI workflows
 ├── backend/                 # Node.js backend
 │   ├── src/
 │   │   ├── config/         # Database configuration
+│   │   ├── middleware/     # Express/Socket middleware
 │   │   ├── models/         # Mongoose models
 │   │   ├── routes/         # API routes
 │   │   ├── utils/          # Utility functions
@@ -294,6 +331,7 @@ cowrite/
 │   │   │   ├── auth/       # Authentication components
 │   │   │   ├── chat/       # Chat system components
 │   │   │   └── sharing/    # Document sharing components
+│   │   ├── contexts/       # React context providers
 │   │   ├── pages/          # Page components
 │   │   ├── hooks/          # Custom React hooks
 │   │   ├── lib/            # Utility libraries
@@ -301,7 +339,9 @@ cowrite/
 │   ├── components.json     # shadcn/ui config
 │   ├── tailwind.config.js  # Tailwind configuration
 │   └── package.json
+├── documentation/           # Deep-dive docs (architecture, sockets, editor)
 ├── images/                  # Screenshot assets
+├── docker-compose.yaml      # Local MongoDB + backend stack
 └── README.md
 ```
 
@@ -330,19 +370,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [TypeScript](https://www.typescriptlang.org/) - Typed superset of JavaScript
 - [Vite](https://vitejs.dev/) - Fast build tool and development server
 
-## 📈 Recent Updates
-
-### v2.0.0 (2025)
-- ✨ Complete UI overhaul with shadcn/ui components
-- 💬 Real-time chat system with typing indicators
-- 🎨 Beautiful light theme with gradients and animations
-- 📱 Enhanced responsive design
-- 🔧 TypeScript migration for better development experience
-- ⚡ Performance optimizations and modern React patterns
-- 🛡️ Improved authentication and security
-- 📝 Editable document titles in header
-- 🖥️ Full-screen editor experience
-
----
 
 
